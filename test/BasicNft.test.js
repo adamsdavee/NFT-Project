@@ -7,7 +7,7 @@ describe("BasicNFT", function () {
 
   beforeEach(async function () {
     deployer = (await getNamedAccounts()).deployer;
-    await deployments.fixture(["mocks", "basicNFT"]);
+    // await deployments.fixture(["mocks", "basicNFT"]);
 
     const NFT = await deployments.get("BasicNFT", deployer);
     basicNft = await ethers.getContractAt("BasicNFT", NFT.address);

@@ -6,7 +6,7 @@ describe("RandomIpfsNft", function () {
 
   beforeEach(async function () {
     deployer = (await getNamedAccounts()).deployer;
-    // await deployments.fixture(["mocks", "randomIpfs"]);
+    // await deployments.fixture(["mocks", "randomIpfs"]); after deploying to the localhost
 
     const randomNft = await deployments.get("RandomIpfsNft", deployer);
     randomIpfsNft = await ethers.getContractAt(
@@ -88,42 +88,52 @@ describe("RandomIpfsNft", function () {
           }
         });
         console.log("Hiii");
+        await vrfCoordinatorV2Mock.addConsumer(1, randomIpfsNft.target);
+        const isConsumerAdded = await vrfCoordinatorV2Mock.consumerIsAdded(
+          1,
+          randomIpfsNft.target
+        );
+        console.log(isConsumerAdded);
         const mintFee = await randomIpfsNft.getMintFee();
         const tx = await randomIpfsNft.requestNft({
           value: mintFee,
         });
 
         const txReceipt = await tx.wait();
-        console.log(txReceipt);
-        console.log(txReceipt.logs[1].topics[1]);
-        console.log("Hiii");
+        console.log(txReceipt.logs[1].args.requestId);
+        console.log("HMMMMMMMMMMMMMMMMMMMMMMMMM");
+        // console.log(txReceipt.logs[1].topics[1]);
+        console.log(randomIpfsNft.target);
+        const subscription = await vrfCoordinatorV2Mock.getSubscription(1);
+        console.log(subscription);
 
         await vrfCoordinatorV2Mock.fulfillRandomWords(
-          txReceipt.logs[1].topics,
-          randomIpfsNft.address
+          txReceipt.logs[1].args.requestId,
+          randomIpfsNft.target // not randomIpfsNft.address
         );
+        console.log("Done?");
       });
     });
   });
 
   describe("get Breed from moddedRng", function () {
-    it.only("should return pug if moddedRng is < 10", async function () {
+    it("should return pug if moddedRng is < 10", async function () {
       const expectedValue = await randomIpfsNft.getBreedFromModdedRng(0);
       console.log(expectedValue);
       assert.equal(0, expectedValue);
     });
-    it.only("should return SHIBA_INU if moddedRng >= 10 && < 40", async function () {
+    it("should return SHIBA_INU if moddedRng >= 10 && < 40", async function () {
       const expectedValue = await randomIpfsNft.getBreedFromModdedRng(10);
       assert.equal(1, expectedValue);
     });
-    it.only("should return ST_BERNARD if moddedRng is >= 40 && <= 100", async function () {
+    it("should return ST_BERNARD if moddedRng is >= 40 && <= 100", async function () {
       const expectedValue = await randomIpfsNft.getBreedFromModdedRng(100);
       console.log(expectedValue);
       assert.equal(2, expectedValue);
     });
-    it.only("should revert if moddedRng is > 100", async function () {
+    it("should revert if moddedRng is > 100", async function () {
       await expect(
-        randomIpfsNft.getBreedFromModdedRng(101)
+        randomIpfsNft.getBreedFromModdedRng(140)
       ).to.be.revertedWithCustomError(
         randomIpfsNft,
         "RandomIpfsNft__RangeOutOfBounds"

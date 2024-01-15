@@ -24,7 +24,7 @@ const metadataTemplate = {
   ],
 };
 
-const FUND_AMOUNT = ethers.parseEther("0.1");
+const FUND_AMOUNT = ethers.parseEther("3");
 
 module.exports = async function () {
   const { deployer } = await getNamedAccounts();
@@ -53,7 +53,10 @@ module.exports = async function () {
     // console.log(vrfCoordinatorV2Mock);
     const tx = await vrfCoordinatorV2Mock.createSubscription();
     const txReceipt = await tx.wait();
-    subscriptionId = txReceipt.logs[0].topics[1];
+    // const subscription = txReceipt.logs[0].args.subId;
+    // console.log(subscription);
+    subscriptionId = txReceipt.logs[0].args.subId;
+    console.log(subscriptionId);
     await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, FUND_AMOUNT);
   } else {
     vrfCoordinatorV2Address = networkConfig[chainId].vrfCoordinatorV2;
@@ -77,7 +80,6 @@ module.exports = async function () {
     log: true,
   });
   console.log(`Deployed contract at ${RandomIpfsNft.address}`);
-  await vrfCoordinatorV2Mock.addConsumer(subscriptionId, RandomIpfsNft.address);
 
   if (chainId != 31337) {
     await verify(RandomIpfsNft.address, args);

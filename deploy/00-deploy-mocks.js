@@ -1,4 +1,5 @@
 const { network } = require("hardhat");
+const { DECIMALS, INITIAL_PRICE } = require("../helper-hardhat-config");
 
 const BASE_FEE = ethers.parseEther("0.25"); // costs 0.20 per request
 const GAS_PRICE_LINK = 1e9; // It is a calculated value based of the gas price of the chain
@@ -15,6 +16,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       from: deployer,
       log: true,
       args: args,
+    });
+
+    await deploy("MockV3Aggregator", {
+      from: deployer,
+      log: true,
+      args: [DECIMALS, INITIAL_PRICE],
     });
 
     log("Mocks Deployed!");

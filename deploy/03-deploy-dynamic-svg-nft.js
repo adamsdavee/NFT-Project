@@ -7,7 +7,7 @@ module.exports = async function () {
   const { deployer } = await getNamedAccounts();
   const { deploy } = deployments;
 
-  await deployments.fixture(["mocks"]);
+  // await deployments.fixture(["mocks"]);
 
   const chainId = network.config.chainId;
   let priceFeedAddress;

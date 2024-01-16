@@ -15,11 +15,13 @@ describe("DynamicSvgNft", function () {
   let deployer, dynamicSvgNft, priceFeedAddress;
 
   beforeEach(async function () {
+    console.log("Hi");
     deployer = (await getNamedAccounts()).deployer;
 
-    // await deployments.fixture(["mocks", "DynamicNft"]);
+    await deployments.fixture(["mocks", "DynamicNft"]);
 
     const dynamicNft = await deployments.get("DynamicSvgNft", deployer);
+    console.log("Hey");
     dynamicSvgNft = await ethers.getContractAt(
       "DynamicSvgNft",
       dynamicNft.address
